@@ -16,7 +16,7 @@ deps:
 	npm install
 
 lint:
-	standard src/**/*.js
+	standard ./**/*.js
 
 dist/custom-elements.js: $(SOURCES)
 	@mkdir -p $(@D)

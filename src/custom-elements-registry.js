@@ -77,42 +77,57 @@ export class CustomElementsRegistry {
   define (name, constructor, options = {}) {
     name = name.toLowerCase()
 
+    // 1.
     if (typeof constructor !== 'function') {
       throw new TypeError('constructor is not a constructor')
     }
 
-    // todo: step 2.
+    // todo: 2.
 
+    // 3.
     if (!isValidCustomElementName(name)) {
       throw new SyntaxError(`the element name ${name} is not valid`)
     }
 
+    // 4.
     if (this._names.has(name)) {
       throw new Error(`an element with name '${name}' is already defined`)
     }
 
+    // 6.
     if (this._constructors.has(constructor)) {
       throw new Error('this constructor is already registered')
     }
 
+    // 8.
     let localName = name
+
+    // 9. ('extends' is a keyword so we have to prefix it with an underscore)
     let _extends = options.extends || null
 
+    // 10.
     if (_extends !== null) {
+      // 10.1.
       if (isValidCustomElementName(_extends)) {
         throw new Error('extends must be a native element')
       }
 
-      // todo: step 10.2.
+      // todo: 10.2.
+      // 10.3.
       localName = _extends
     }
 
+    // omit the try catch because we don't respect 'being-defined' elements
+
+    // 13.1.
     const prototype = constructor.prototype
 
+    // 13.2.
     if (typeof prototype !== 'object') {
       throw new TypeError('constructor.prototype must be an object')
     }
 
+    // 13.3.
     const lifecycleCallbacks = {
       connectedCallback: null,
       disconnectedCallback: null,
@@ -120,25 +135,35 @@ export class CustomElementsRegistry {
       attributeChangedCallback: null
     }
 
+    // 13.4.
     Object.keys(lifecycleCallbacks)
       .forEach((callbackName) => {
+        // 13.4.1.
         const callbackValue = prototype[ callbackName ]
 
+        // 13.4.2.
         if (callbackValue !== undefined) {
           lifecycleCallbacks[ callbackName ] = callbackValue
         }
       })
 
+    // 13.5.
     let observedAttributes = []
 
+    // 13.6.
     if (lifecycleCallbacks.attributeChangedCallback !== null) {
+      // 13.6.1.
       const observedAttributesIterable = constructor.observedAttributes
 
+      // 13.6.2.
       if (observedAttributesIterable != null) {
+        // todo: is converting to strings necessary?
         observedAttributes = Array.from(observedAttributesIterable)
+          .map((attr) => String(attr))
       }
     }
 
+    // 14.
     const definition = {
       name,
       localName,
@@ -148,11 +173,13 @@ export class CustomElementsRegistry {
       lifecycleCallbacks
     }
 
+    // 15.
     this._definitions.set(name, definition)
 
     this._names.add(name)
     this._constructors.add(constructor)
 
+    // 16.
     const document = window.document
 
     // todo: continue from step 17

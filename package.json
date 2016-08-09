@@ -1,7 +1,7 @@
 {
   "name": "custom-elements",
   "version": "0.0.1",
-  "description": "an independent polyfill for the custom elements v1 spec",
+  "description": "a standalone polyfill for the custom elements v1 spec",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bash/custom-elements.git"

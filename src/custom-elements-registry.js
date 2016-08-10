@@ -352,20 +352,47 @@ export class CustomElementsRegistry {
   /**
    *
    * @param {Element} element
+   * @returns {CustomElementDefinition}
    * @private
-   * @see https://www.w3.org/TR/custom-elements/#concept-try-upgrade
    */
-  _tryUpgradeElement (element) {
+  _getElementDefinition (element) {
     let name = element.localName
     const is = element.getAttribute('is')
 
-    // todo: polyfill 'is' attribute
     if (is != null) {
       name = is
     }
 
+    return this._definitions.get(name)
+  }
+
+  /**
+   *
+   * @param {Function} constructor
+   * @returns {CustomElementDefinition}
+   * @private
+   */
+  _lookupByConstructor (constructor) {
+    let result = null
+
+    this._definitions.forEach((definition) => {
+      if (definition.constructor === constructor) {
+        result = definition
+      }
+    })
+
+    return result
+  }
+
+  /**
+   *
+   * @param {Element} element
+   * @private
+   * @see https://www.w3.org/TR/custom-elements/#concept-try-upgrade
+   */
+  _tryUpgradeElement (element) {
     // 1.
-    const definition = this._definitions.get(name)
+    const definition = this._getElementDefinition(element)
 
     if (definition != null) {
       queueMicrotask(() => this._upgradeElement(element, definition))

@@ -5,7 +5,43 @@
     <title>custom-elements</title>
 </head>
 <body>
+<foo-bar foo="hello world"></foo-bar>
 <script src="./dist/custom-elements.js"></script>
-<foo-bar></foo-bar>
+<script>
+
+    window.customElements.whenDefined('foo-bar')
+            .then(() => {
+        console.log('foo-bar defined', window.customElements.get('foo-bar'))
+    })
+
+    class FooBar extends HTMLElement {
+        constructor () {
+            super()
+        }
+
+        connectedCallback () {
+            console.log('connected', this)
+        }
+
+        disconnectedCallback () {
+            console.log('connected')
+        }
+
+        attributeChangedCallback (name, oldValue, newValue) {
+            console.log('attribute changed', name, oldValue, newValue)
+        }
+
+        get foo () {
+            return this.getAttribute('foo')
+        }
+
+        static get observedAttributes () {
+            return new Set(['foo', 'bar', 'baz'])
+        }
+    }
+
+    window.customElements.define('foo-bar', FooBar)
+
+</script>
 </body>
 </html>

@@ -305,7 +305,7 @@ export class CustomElementsRegistry {
    * @see https://www.w3.org/TR/custom-elements/#upgrades
    */
   _upgradeElement (element, definition) {
-    const state = this._customElementState.get(element)
+    const state = this._getState(element)
 
     // 1.
     if (state === 'custom') {
@@ -437,5 +437,15 @@ export class CustomElementsRegistry {
     queueMicrotask(() => {
       callback.apply(element, args)
     })
+  }
+
+  /**
+   * 
+   * @param {Element} element
+   * @returns {string}
+   * @private
+   */
+  _getState (element) {
+    return this._customElementState.get(element)
   }
 }

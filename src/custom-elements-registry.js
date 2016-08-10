@@ -33,6 +33,12 @@ import { isConnected } from './dom-utils'
 
 /**
  *
+ * @param {Function} callbackFn
+ */
+const queueMicroTask = (callbackFn) => Promise.resolve().then(callbackFn)
+
+/**
+ *
  * @type {Array<string>}
  * @see https://www.w3.org/TR/custom-elements/#valid-custom-element-name
  */
@@ -337,7 +343,7 @@ export class CustomElementsRegistry {
     }
 
     // 4.
-    if (isConnected(this)) {
+    if (isConnected(element)) {
       this._callbackReaction(element, 'connectedCallback', [])
     }
 
@@ -423,7 +429,9 @@ export class CustomElementsRegistry {
 
     // 2.
     if (definition != null) {
-      this._upgradeElement(element, definition)
+      queueMicroTask(() => {
+        this._upgradeElement(element, definition)
+      })
     }
   }
 
@@ -451,8 +459,9 @@ export class CustomElementsRegistry {
       return
     }
 
-    // idk why i would build a queue i'm just calling it right away
-    callback.apply(element, args)
+    queueMicroTask(() => {
+      callback.apply(element, args)
+    })
   }
 
   /**

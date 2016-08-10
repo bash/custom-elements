@@ -50,6 +50,7 @@ export class TreeObserver {
    *
    * @param {Node|Element} node
    * @private
+   * @todo elements inside shadow roots
    */
   _addNode (node) {
     if (node.nodeType !== Node.ELEMENT_NODE) {
@@ -58,9 +59,13 @@ export class TreeObserver {
 
     const registry = this._registry
 
+    for (let i = 0; i < node.childNodes.length; i++) {
+      this._addNode(node.childNodes[ i ])
+    }
+
     if (isCustom(node)) {
       // noinspection JSAccessibilityCheck
-      registry._callbackReaction(node, 'connectedCallback', [])
+      return registry._callbackReaction(node, 'connectedCallback', [])
     }
 
     // noinspection JSAccessibilityCheck
@@ -92,7 +97,7 @@ export class TreeObserver {
     if (!isCustom(node)) {
       return
     }
-    
+
     const attributeName = mutation.attributeName
 
     // noinspection JSAccessibilityCheck

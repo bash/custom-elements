@@ -382,11 +382,12 @@ export class CustomElementsRegistry {
    *
    * @param {Element} element
    * @param {string|null} [is]
-   * @returns {CustomElementDefinition}
+   * @returns {CustomElementDefinition|null}
    * @private
    */
   _getElementDefinition (element, is) {
-    let name = element.localName.toLowerCase()
+    const localName = element.localName.toLowerCase()
+    let name = localName
 
     is = is || element.getAttribute('is')
 
@@ -394,7 +395,14 @@ export class CustomElementsRegistry {
       name = is
     }
 
-    return this._definitions[ name ]
+    const definition = this._definitions[ name ]
+
+    // prevent an non-autonomous element being constructed as such
+    if (definition == null || localName !== definition.localName) {
+      return null
+    }
+    
+    return definition
   }
 
   /**

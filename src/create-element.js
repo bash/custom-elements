@@ -33,7 +33,7 @@ export function createElement (createElement, registry) {
 
     // 5.
     if (is != null && definition == null) {
-      throw new Error(`no definition found for element ${definition}`)
+      throw new Error(`no definition found for element ${localName}`)
     }
 
     if (definition != null) {

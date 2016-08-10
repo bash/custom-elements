@@ -13,11 +13,11 @@ const alreadyConstructedMarker = {}
 /**
  *
  * @param {CustomElementsRegistry} registry
- * @param isHtmlElement
+ * @param {boolean} isHtmlElement
  * @returns {Function}
  * @constructor
  */
-export function ElementConstructor (registry, isHtmlElement = false) {
+export function ElementConstructor (registry, isHtmlElement) {
   return function () {
     // noinspection JSAccessibilityCheck
     const definition = registry._lookupByConstructor(this.constructor)
@@ -26,7 +26,12 @@ export function ElementConstructor (registry, isHtmlElement = false) {
       throw new Error('no definition found for element')
     }
 
-    // todo: 3., 4.
+    // 3.1.
+    if (definition.localName === definition.name && !isHtmlElement) {
+      throw new TypeError('an autonomous element must inherit from HTMLElement')
+    }
+
+    // todo: 4.
 
     const constructionStack = definition.constructionStack
     const prototype = definition.prototype

@@ -87,11 +87,12 @@ const elementInterfaces = [
  *
  * @param {Function} Original
  * @param {CustomElementsRegistry} registry
+ * @param {boolean} isHtmlElement
  * @returns {Function}
  */
-const wrapElementConstructor = (Original, registry) => {
+const wrapElementConstructor = (Original, registry, isHtmlElement) => {
   const proto = Original.prototype
-  const Constructor = ElementConstructor(registry)
+  const Constructor = ElementConstructor(registry, isHtmlElement)
 
   Constructor.prototype = Object.create(proto)
 
@@ -103,7 +104,7 @@ const wrapElementConstructor = (Original, registry) => {
  * @param {CustomElementsRegistry} registry
  */
 export function patchConstructors (registry) {
-  window.HTMLElement = wrapElementConstructor(window.HTMLElement, registry)
+  window.HTMLElement = wrapElementConstructor(window.HTMLElement, registry, true)
 
   elementInterfaces.forEach((name) => {
     const fullName = `HTML${name}Element`
@@ -112,6 +113,6 @@ export function patchConstructors (registry) {
       return
     }
 
-    window[ fullName ] = wrapElementConstructor(window[ fullName ], registry)
+    window[ fullName ] = wrapElementConstructor(window[ fullName ], registry, false)
   })
 }

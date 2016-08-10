@@ -8,7 +8,9 @@ import { createElement } from './create-element'
 
 const registry = new CustomElementsRegistry()
 
-window.customElements = registry
+Object.defineProperty(Window.prototype, 'customElements', {
+  value: registry
+})
 
 const wrapElementConstructor = (Original) => {
   const proto = Original.prototype

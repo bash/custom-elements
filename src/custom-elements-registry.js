@@ -325,7 +325,16 @@ export class CustomElementsRegistry {
       return
     }
 
-    // todo: 3.
+    for (let i = 0; i < element.attributes.length; i++) {
+      const attribute = element.attributes[ i ]
+
+      this._callbackReaction(element, 'attributeChangedCallback', [
+        attribute.localName,
+        null,
+        attribute.value,
+        attribute.namespaceURI
+      ])
+    }
 
     // 4.
     if (isConnected(this)) {

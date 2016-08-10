@@ -32,9 +32,13 @@ export class TreeObserver {
       mutations.forEach((mutation) => {
         Array.from(mutation.addedNodes)
           .forEach((node) => this._addNode(node))
-        
+
         Array.from(mutation.removedNodes)
           .forEach((node) => this._removeNode(node))
+
+        if (mutation.type === 'attributes') {
+          this._attributeChange(mutation)
+        }
       })
     })
 
@@ -75,5 +79,28 @@ export class TreeObserver {
 
     // noinspection JSAccessibilityCheck
     this._registry._callbackReaction(node, 'disconnectedCallback', [])
+  }
+
+  /**
+   *
+   * @param {MutationRecord} mutation
+   * @private
+   */
+  _attributeChange (mutation) {
+    const node = mutation.target
+
+    if (!isCustom(node)) {
+      return
+    }
+    
+    const attributeName = mutation.attributeName
+
+    // noinspection JSAccessibilityCheck
+    this._registry._callbackReaction(node, 'attributeChangedCallback', [
+      attributeName,
+      mutation.oldValue,
+      node.getAttribute(attributeName),
+      mutation.attributeNamespace
+    ])
   }
 }

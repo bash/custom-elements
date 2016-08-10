@@ -42,7 +42,7 @@ export function isConnected (node) {
 
 /**
  * 
- * @param {Element} element
+ * @param {Element|Node} element
  */
 export function isCustom (element) {
   return window.customElements._getState(element) === 'custom'

@@ -11,7 +11,6 @@
 // todo: cloning
 // todo: patch createElementNS
 // todo: adoptedCallback
-// todo: attributeChangedCallback
 
 import { CustomElementsRegistry } from './custom-elements-registry'
 import { TreeObserver } from './tree-observer'
@@ -20,11 +19,17 @@ import { patchDocument } from './patches/document'
 import { patchWindow } from './patches/window'
 import { patchConstructors } from './patches/constructors'
 
-const registry = new CustomElementsRegistry()
-const observer = new TreeObserver(registry)
+(() => {
+  if (window.customElements) {
+    return
+  }
 
-patchDocument(registry)
-patchWindow(registry)
-patchConstructors(registry)
+  const registry = new CustomElementsRegistry()
+  const observer = new TreeObserver(registry)
 
-observer.observe()
+  patchDocument(registry)
+  patchWindow(registry)
+  patchConstructors(registry)
+
+  observer.observe()
+})()

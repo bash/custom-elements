@@ -56,7 +56,18 @@ const isValidCustomElementName = (name) => {
 
 export class CustomElementsRegistry {
   constructor () {
+    /**
+     *
+     * @type {Set<string>}
+     * @private
+     */
     this._names = new Set()
+
+    /**
+     *
+     * @type {Set<Function>}
+     * @private
+     */
     this._constructors = new Set()
 
     /**
@@ -65,6 +76,58 @@ export class CustomElementsRegistry {
      * @private
      */
     this._definitions = new Map()
+
+    /**
+     *
+     * @type {Map<string,{ resolve: (function()), promise: Promise }>}
+     * @private
+     */
+    this._whenDefined = new Map()
+
+    /**
+     *
+     * @type {WeakMap<Element,string>}
+     * @private
+     */
+    this._customElementsState = new WeakMap()
+  }
+
+  /**
+   *
+   * @param {string} name
+   * @returns {Function|undefined}
+   */
+  get (name) {
+    if (this._definitions.has(name)) {
+      return this._definitions.get(name).constructor
+    }
+  }
+
+  /**
+   *
+   * @param {string} name
+   */
+  whenDefined (name) {
+    if (!isValidCustomElementName(name)) {
+      return Promise.reject(new SyntaxError(`the element name ${name} is not valid`))
+    }
+
+    if (this._definitions.has(name)) {
+      return Promise.resolve()
+    }
+
+    const map = this._whenDefined
+
+    if (!map.has(name)) {
+      let resolver
+      const promise = new Promise((resolve) => resolver = resolve)
+
+      map.set(name, { promise, resolve: resolver })
+    }
+
+    const promise = map.get(name)
+
+    return promise.promise
   }
 
   /**
@@ -182,6 +245,57 @@ export class CustomElementsRegistry {
     // 16.
     const document = window.document
 
-    // todo: continue from step 17
+    // 17.
+    let selector = localName
+
+    if (_extends != null) {
+      selector += `[is="${name}"]`
+    }
+
+    // todo: how do i find those elements in the shadow root?
+    const upgradeCandidates = document.querySelectorAll(selector)
+
+    // 18.
+    Array.from(upgradeCandidates)
+      .forEach((element) => this._upgradeElement(element, definition))
+
+    // 19.
+    if (this._whenDefined.has(name)) {
+      // 19.1.
+      const promise = this._whenDefined.get(name)
+
+      // 19.2.
+      promise.resolve()
+
+      // 19.3.
+      this._whenDefined.delete(name)
+    }
+  }
+
+  /**
+   *
+   * @param {Element} element
+   * @param {CustomElementDefinition} definition
+   * @private
+   * @see https://www.w3.org/TR/custom-elements/#upgrades
+   */
+  _upgradeElement (element, definition) {
+    const state = this._customElementsState.get(element)
+
+    // 1.
+    if (state === 'custom') {
+      return
+    }
+
+    // 2.
+    if (state === 'failed') {
+      return
+    }
+
+    // todo: 3.
+
+    if (element.ownerDocument) {
+      
+    }
   }
 }

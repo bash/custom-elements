@@ -12,6 +12,79 @@ import { ElementConstructor } from '../element-constructor'
 
 /**
  *
+ * @type {Array}
+ * @see https://html.spec.whatwg.org/multipage/indices.html#element-interfaces
+ */
+const elementInterfaces = [
+  'Anchor',
+  'Area',
+  'Audio',
+  'Base',
+  'Quote',
+  'Body',
+  'BR',
+  'Button',
+  'Canvas',
+  'TableCaption',
+  'TableCol',
+  'MenuItem',
+  'Data',
+  'DataList',
+  'Mod',
+  'Details',
+  'Dialog',
+  'Div',
+  'DList',
+  'Embed',
+  'FieldSet',
+  'Form',
+  'Heading',
+  'Head',
+  'HR',
+  'Html',
+  'IFrame',
+  'Image',
+  'Input',
+  'Keygen',
+  'Label',
+  'Legend',
+  'LI',
+  'Link',
+  'Map',
+  'Menu',
+  'Meta',
+  'Meter',
+  'Object',
+  'OList',
+  'OptGroup',
+  'Option',
+  'Output',
+  'Paragraph',
+  'Param',
+  'Picture',
+  'Pre',
+  'Progress',
+  'Script',
+  'Select',
+  'Slot',
+  'Source',
+  'Span',
+  'Style',
+  'Table',
+  'TableSection',
+  'TableCell',
+  'Template',
+  'TextArea',
+  'Time',
+  'Title',
+  'TableRow',
+  'Track',
+  'UList',
+  'Video'
+]
+
+/**
+ *
  * @param {Function} Original
  * @param {CustomElementsRegistry} registry
  * @returns {Function}
@@ -28,9 +101,17 @@ const wrapElementConstructor = (Original, registry) => {
 /**
  *
  * @param {CustomElementsRegistry} registry
- * @todo wrap all html element constructors
  */
 export function patchConstructors (registry) {
   window.HTMLElement = wrapElementConstructor(window.HTMLElement, registry)
-  window.HTMLInputElement = wrapElementConstructor(window.HTMLInputElement, registry)
+
+  elementInterfaces.forEach((name) => {
+    const fullName = `HTML${name}Element`
+    
+    if (!window[fullName]) {
+      return
+    }
+
+    window[ fullName ] = wrapElementConstructor(window[ fullName ], registry)
+  })
 }

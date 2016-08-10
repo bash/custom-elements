@@ -52,14 +52,6 @@ const validNameRegex = /[a-z][\-.0-9a-z_]*-[\-.0-9a-z_]*$/
 
 /**
  *
- * @param {Function} callbackFn
- */
-const queueMicrotask = (callbackFn) => {
-  Promise.resolve().then(callbackFn)
-}
-
-/**
- *
  * @param {string} name
  * @returns {boolean}
  */
@@ -391,7 +383,7 @@ export class CustomElementsRegistry {
 
     Object.keys(this._definitions).forEach((key) => {
       const definition = this._definitions[ key ]
-      
+
       if (definition.constructor === constructor) {
         result = definition
       }
@@ -411,7 +403,7 @@ export class CustomElementsRegistry {
     const definition = this._getElementDefinition(element)
 
     if (definition != null) {
-      queueMicrotask(() => this._upgradeElement(element, definition))
+      this._upgradeElement(element, definition)
     }
   }
 
@@ -440,13 +432,11 @@ export class CustomElementsRegistry {
     }
 
     // idk why i would build a queue i'm just calling it right away
-    queueMicrotask(() => {
-      callback.apply(element, args)
-    })
+    callback.apply(element, args)
   }
 
   /**
-   * 
+   *
    * @param {Element} element
    * @returns {string}
    * @private

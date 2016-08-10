@@ -68,11 +68,11 @@ const isValidCustomElementName = (name) => {
 export class CustomElementsRegistry {
   constructor () {
     /**
-     * 
+     *
      * @type {boolean}
      */
     this.polyfilled = true
-    
+
     /**
      *
      * @type {Set<string>}
@@ -89,10 +89,10 @@ export class CustomElementsRegistry {
 
     /**
      *
-     * @type {Map<string,CustomElementDefinition>}
+     * @type {{}}
      * @private
      */
-    this._definitions = new Map()
+    this._definitions = {}
 
     /**
      *
@@ -115,15 +115,15 @@ export class CustomElementsRegistry {
      */
     this._customElementDefinition = new WeakMap()
   }
-  
+
   /**
    *
    * @param {string} name
    * @returns {Function|undefined}
    */
   get (name) {
-    if (this._definitions.has(name)) {
-      return this._definitions.get(name).constructor
+    if (this._definitions.hasOwnProperty(name)) {
+      return this._definitions[ name ].constructor
     }
   }
 
@@ -136,7 +136,7 @@ export class CustomElementsRegistry {
       return Promise.reject(new SyntaxError(`the element name ${name} is not valid`))
     }
 
-    if (this._definitions.has(name)) {
+    if (this._definitions.hasOwnProperty(name)) {
       return Promise.resolve()
     }
 
@@ -262,7 +262,7 @@ export class CustomElementsRegistry {
     }
 
     // 15.
-    this._definitions.set(name, definition)
+    this._definitions[ name ] = definition
 
     this._names.add(name)
     this._constructors.add(constructor)
@@ -371,7 +371,7 @@ export class CustomElementsRegistry {
       name = is
     }
 
-    return this._definitions.get(name)
+    return this._definitions[ name ]
   }
 
   /**
@@ -383,7 +383,9 @@ export class CustomElementsRegistry {
   _lookupByConstructor (constructor) {
     let result = null
 
-    this._definitions.forEach((definition) => {
+    Object.keys(this._definitions).forEach((key) => {
+      const definition = this._definitions[ key ]
+      
       if (definition.constructor === constructor) {
         result = definition
       }

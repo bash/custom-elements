@@ -6,6 +6,7 @@
 // todo: upgrade/connect on insertion
 // todo: disconnected on removal
 // todo: patch createElementNS
+// todo: adoptedCallback
 
 import { CustomElementsRegistry } from './custom-elements-registry'
 import { ElementConstructor } from './element-constructor'

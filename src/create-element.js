@@ -19,22 +19,34 @@ export function createElement (createElement, registry) {
    *
    * @param {string} localName
    * @param {{ is: string|null }} options
+   * @see https://dom.spec.whatwg.org/#dom-document-createelement
    */
   return function (localName, options = {}) {
     const element = createElement.call(this, localName)
-    
-    if (options.is != null) {
-      element.setAttribute('is', options.is)
-    }
 
+    // 3.
+    const is = options.is
+
+    // 4.
     // noinspection JSAccessibilityCheck
     const definition = registry._getElementDefinition(element)
+
+    // 5.
+    if (is != null && definition == null) {
+      throw new Error(`no definition found for element ${definition}`)
+    }
 
     if (definition != null) {
       // noinspection JSAccessibilityCheck
       registry._upgradeElement(element, definition)
     }
 
+    // 8.
+    if (is != null) {
+      element.setAttribute('is', options.is)
+    }
+
+    // 9.
     return element
   }
 }

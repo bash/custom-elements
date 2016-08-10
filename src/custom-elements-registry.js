@@ -381,7 +381,7 @@ export class CustomElementsRegistry {
    * @private
    */
   _getElementDefinition (element) {
-    let name = element.localName
+    let name = element.localName.toLowerCase()
     const is = element.getAttribute('is')
 
     if (is != null) {

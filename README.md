@@ -6,6 +6,8 @@
 
 a standalone polyfill for the custom elements v1 spec
 
+🚧 **DISCLAIMER: THIS POLYFILL IS WORK IN PROGRESS. USE AT YOUR OWN RISK.** 🚧
+
 ## Install Dependencies
 ```bash
 make deps

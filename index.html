@@ -6,30 +6,6 @@
 </head>
 <body>
 <script src="./dist/custom-elements.js"></script>
-<script>
-    class FooBar extends HTMLElement {
-        constructor () {
-            super()
-        }
-
-        connectedCallback () {
-            console.log('connected')
-        }
-
-        disconnectedCallback () {
-            console.log('connected')
-        }
-
-        attributeChangedCallback (name, oldValue, newValue) {
-            console.log('attribute changed', name, oldValue, newValue)
-        }
-
-        static get observedAttributes () {
-            return new Set(['foo', 'bar', 'baz'])
-        }
-    }
-
-    window.customElements.define('foo-bar', FooBar)
-</script>
+<foo-bar></foo-bar>
 </body>
 </html>

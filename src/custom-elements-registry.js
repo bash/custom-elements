@@ -11,6 +11,7 @@
  * @property {Object} prototype
  * @property {Array<string>} observedAttributes
  * @property {CustomElementLifeCycleCallbacks} lifecycleCallbacks
+ * @property {Array} constructionStack
  */
 
 /**
@@ -40,6 +41,14 @@ const reservedNames = [
 
 // const validNameRegex = /[a-z][\-.0-9a-z_\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]*-[\-.0-9a-z_\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]*$/
 const validNameRegex = /[a-z][\-.0-9a-z_]*-[\-.0-9a-z_]*$/
+
+/**
+ *
+ * @param {Function} callbackFn
+ */
+const queueMicrotask = (callbackFn) => {
+  Promise.resolve().then(callbackFn)
+}
 
 /**
  *
@@ -89,7 +98,14 @@ export class CustomElementsRegistry {
      * @type {WeakMap<Element,string>}
      * @private
      */
-    this._customElementsState = new WeakMap()
+    this._customElementState = new WeakMap()
+
+    /**
+     *
+     * @type {WeakMap<Element,CustomElementDefinition>}
+     * @private
+     */
+    this._customElementDefinition = new WeakMap()
   }
 
   /**
@@ -233,7 +249,8 @@ export class CustomElementsRegistry {
       constructor,
       prototype,
       observedAttributes,
-      lifecycleCallbacks
+      lifecycleCallbacks,
+      constructionStack: []
     }
 
     // 15.
@@ -280,7 +297,7 @@ export class CustomElementsRegistry {
    * @see https://www.w3.org/TR/custom-elements/#upgrades
    */
   _upgradeElement (element, definition) {
-    const state = this._customElementsState.get(element)
+    const state = this._customElementState.get(element)
 
     // 1.
     if (state === 'custom') {
@@ -294,8 +311,94 @@ export class CustomElementsRegistry {
 
     // todo: 3.
 
+    // 4.
     if (element.ownerDocument) {
-      
+      this._callbackReaction(element, 'connectedCallback', [])
     }
+
+    // 5.
+    definition.constructionStack.push(element)
+
+    // 6.
+    const C = definition.constructor
+    let constructResult
+
+    try {
+      // 7.
+      constructResult = Reflect.construct(C, [])
+      // 8.
+      definition.constructionStack.pop()
+    } catch (error) {
+      // 9.1.
+      this._customElementState.set(element, 'failed')
+      // 9.2.
+      throw error
+    }
+
+    // 10.
+    if (constructResult != element) {
+      throw new Error('invalid state error')
+    }
+
+    // 11.
+    this._customElementState.set(element, 'custom')
+
+    // 12.
+    this._customElementDefinition.set(element, definition)
+
+    // todo: upgrade reaction
+  }
+
+  /**
+   *
+   * @param {Element} element
+   * @private
+   * @see https://www.w3.org/TR/custom-elements/#concept-try-upgrade
+   */
+  _tryUpgradeElement (element) {
+    let name = element.localName
+    const is = element.getAttribute('is')
+
+    // todo: polyfill 'is' attribute
+    if (is != null) {
+      name = is
+    }
+
+    // 1.
+    const definition = this._definitions.get(name)
+
+    if (definition != null) {
+      queueMicrotask(() => this._upgradeElement(element, definition))
+    }
+  }
+
+  /**
+   *
+   * @param {Element} element
+   * @param {string} callbackName
+   * @param {Array} args
+   * @private
+   * @see https://www.w3.org/TR/custom-elements/#enqueue-a-custom-element-callback-reaction
+   */
+  _callbackReaction (element, callbackName, args) {
+    // 1.
+    const definition = this._definitions.get(element.localName)
+    // 2.
+    const callback = definition.lifecycleCallbacks[ callbackName ]
+
+    // 3.
+    if (callback === null) {
+      return
+    }
+
+    // 4.2.
+    if (callbackName === 'attributeChangedCallback' && definition.observedAttributes.indexOf(args[ 0 ]) === -1) {
+      return
+    }
+
+    // idk why i would build a queue i'm just calling it right away
+    queueMicrotask(() => {
+      callback.apply(element, args)
+    })
   }
 }

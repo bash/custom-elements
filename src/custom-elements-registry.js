@@ -68,6 +68,12 @@ const isValidCustomElementName = (name) => {
 export class CustomElementsRegistry {
   constructor () {
     /**
+     * 
+     * @type {boolean}
+     */
+    this.polyfilled = true
+    
+    /**
      *
      * @type {Set<string>}
      * @private
@@ -109,7 +115,7 @@ export class CustomElementsRegistry {
      */
     this._customElementDefinition = new WeakMap()
   }
-
+  
   /**
    *
    * @param {string} name

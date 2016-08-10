@@ -2,6 +2,11 @@
  * (c) 2016 Ruben Schmidmeister
  */
 
+// todo: cloning
+// todo: upgrade/connect on insertion
+// todo: disconnected on removal
+// todo: patch createElementNS
+
 import { CustomElementsRegistry } from './custom-elements-registry'
 import { ElementConstructor } from './element-constructor'
 import { createElement } from './create-element'

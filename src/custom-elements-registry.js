@@ -94,10 +94,10 @@ export class CustomElementsRegistry {
 
     /**
      *
-     * @type {Map<string,{ resolve: (function()), promise: Promise }>}
+     * @type {{}}
      * @private
      */
-    this._whenDefined = new Map()
+    this._whenDefined = {}
 
     /**
      *
@@ -118,8 +118,10 @@ export class CustomElementsRegistry {
    *
    * @param {string} name
    * @returns {Function|undefined}
+   * @see https://www.w3.org/TR/custom-elements/#dom-customelementsregistry-get
    */
   get (name) {
+    // 1.
     if (this._definitions.hasOwnProperty(name)) {
       return this._definitions[ name ].constructor
     }
@@ -128,27 +130,35 @@ export class CustomElementsRegistry {
   /**
    *
    * @param {string} name
+   * @returns {Promise<void>}
+   * @see https://www.w3.org/TR/custom-elements/#dom-customelementsregistry-whendefined
    */
   whenDefined (name) {
+    // 1.
     if (!isValidCustomElementName(name)) {
       return Promise.reject(new SyntaxError(`the element name ${name} is not valid`))
     }
 
+    // 2.
     if (this._definitions.hasOwnProperty(name)) {
       return Promise.resolve()
     }
 
+    // 3.
     const map = this._whenDefined
 
-    if (!map.has(name)) {
+    // 4.
+    if (!map.hasOwnProperty(name)) {
       let resolver
       const promise = new Promise((resolve) => resolver = resolve)
 
-      map.set(name, { promise, resolve: resolver })
+      map[ name ] = { promise, resolve: resolver }
     }
 
-    const promise = map.get(name)
+    // 5.
+    const promise = map[ name ]
 
+    // 6.
     return promise.promise
   }
 
@@ -283,15 +293,15 @@ export class CustomElementsRegistry {
       .forEach((element) => this._upgradeElement(element, definition))
 
     // 19.
-    if (this._whenDefined.has(name)) {
+    if (this._whenDefined.hasOwnProperty(name)) {
       // 19.1.
-      const promise = this._whenDefined.get(name)
+      const promise = this._whenDefined[ name ]
 
       // 19.2.
       promise.resolve()
 
       // 19.3.
-      this._whenDefined.delete(name)
+      delete this._whenDefined[ name ]
     }
   }
 
@@ -402,6 +412,7 @@ export class CustomElementsRegistry {
     // 1.
     const definition = this._getElementDefinition(element)
 
+    // 2.
     if (definition != null) {
       this._upgradeElement(element, definition)
     }

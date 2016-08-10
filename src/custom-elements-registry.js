@@ -401,7 +401,7 @@ export class CustomElementsRegistry {
     if (definition == null || localName !== definition.localName) {
       return null
     }
-    
+
     return definition
   }
 

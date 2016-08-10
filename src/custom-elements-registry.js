@@ -409,7 +409,7 @@ export class CustomElementsRegistry {
    */
   _callbackReaction (element, callbackName, args) {
     // 1.
-    const definition = this._definitions.get(element.localName)
+    const definition = this._getElementDefinition(element)
     // 2.
     const callback = definition.lifecycleCallbacks[ callbackName ]
 

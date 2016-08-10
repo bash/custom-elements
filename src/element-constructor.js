@@ -4,47 +4,50 @@
 
 const alreadyConstructedMarker = {}
 
-export function ElementConstructor () {
-  const registry = window.customElements
+/**
+ *
+ * @param {CustomElementsRegistry} registry
+ * @returns {Function}
+ * @constructor
+ */
+export function ElementConstructor (registry) {
+  return function () {
+    // noinspection JSAccessibilityCheck
+    const definition = registry._lookupByConstructor(this.constructor)
+    
+    if (definition == null) {
+      throw new Error('no definition found for element')
+    }
 
-  // noinspection JSAccessibilityCheck
-  const definition = registry._lookupByConstructor(this.constructor)
+    // todo: 3., 4.
 
-  if (definition == null) {
-    throw new Error('no definition found for element')
-  }
+    const constructionStack = definition.constructionStack
+    const prototype = definition.prototype
 
-  // todo: 3., 4.
+    if (!constructionStack.length) {
+      const element = document.createElement(definition.localName)
 
-  const constructionStack = definition.constructionStack
-  const prototype = definition.prototype
+      Reflect.setPrototypeOf(element, prototype)
 
-  if (!constructionStack.length) {
-    // todo: extends
-    const element = document.createElement(definition.localName)
+      // noinspection JSAccessibilityCheck
+      registry._customElementState.set(element, 'custom')
+
+      return element
+    }
+
+    const element = constructionStack[ constructionStack.length - 1 ]
+
+    if (element === alreadyConstructedMarker) {
+      throw new Error('invalid state e.g. nested element construction before calling super()')
+    }
 
     Reflect.setPrototypeOf(element, prototype)
 
-    // noinspection JSAccessibilityCheck
-    registry._customElementState.set(element, 'custom')
+    // wtf is an already constructed marker?!?
+    // is it really just a special object???
+    constructionStack.pop()
+    constructionStack.push(alreadyConstructedMarker)
 
     return element
   }
-
-  const element = constructionStack[ constructionStack.length - 1 ]
-
-  if (element === alreadyConstructedMarker) {
-    throw new Error('invalid state e.g. nested element construction before calling super()')
-  }
-
-  Reflect.setPrototypeOf(element, prototype)
-
-  // wtf is an already constructed marker?!?
-  // is it really just a special object???
-  constructionStack.pop()
-  constructionStack.push(alreadyConstructedMarker)
-
-  return element
 }
-
-ElementConstructor.prototype = Object.create(HTMLElement.prototype)

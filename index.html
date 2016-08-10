@@ -6,12 +6,20 @@
 </head>
 <body>
 <foo-bar foo="hello world"></foo-bar>
+<input is="extended-input" />
 <script src="./dist/custom-elements.js"></script>
 <script>
 
     window.customElements.whenDefined('foo-bar')
             .then(() => {
-        console.log('foo-bar defined', window.customElements.get('foo-bar'))
+        console.log('foo-bar defined')
+        console.log(window.customElements.get('foo-bar'))
+        console.log(document.querySelector('foo-bar').foo)
+    })
+
+    window.customElements.whenDefined('extended-input')
+            .then(() => {
+        console.log(document.querySelector('input').foobar())
     })
 
     class FooBar extends HTMLElement {
@@ -40,7 +48,24 @@
         }
     }
 
+    class ExtendedInput extends HTMLInputElement {
+        constructor () {
+            super()
+
+            console.log('constructed')
+        }
+
+        connectedCallback () {
+            console.log('connected', this)
+        }
+
+        foobar () {
+            console.log('foobar called')
+        }
+    }
+
     window.customElements.define('foo-bar', FooBar)
+    window.customElements.define('extended-input', ExtendedInput, { extends: 'input' })
 
 </script>
 </body>

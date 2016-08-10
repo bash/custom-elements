@@ -23,6 +23,8 @@
  * @property {Function} attributeChangedCallback
  */
 
+import { isConnected } from './dom-utils'
+
 /**
  *
  * @type {Array<string>}
@@ -312,7 +314,7 @@ export class CustomElementsRegistry {
     // todo: 3.
 
     // 4.
-    if (element.ownerDocument) {
+    if (isConnected(this)) {
       this._callbackReaction(element, 'connectedCallback', [])
     }
 

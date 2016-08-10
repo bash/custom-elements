@@ -13,14 +13,15 @@ const alreadyConstructedMarker = {}
 /**
  *
  * @param {CustomElementsRegistry} registry
+ * @param isHtmlElement
  * @returns {Function}
  * @constructor
  */
-export function ElementConstructor (registry) {
+export function ElementConstructor (registry, isHtmlElement = false) {
   return function () {
     // noinspection JSAccessibilityCheck
     const definition = registry._lookupByConstructor(this.constructor)
-    
+
     if (definition == null) {
       throw new Error('no definition found for element')
     }

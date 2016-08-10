@@ -37,11 +37,11 @@ export function findShadowInclusiveRoot (node) {
  * @returns {boolean}
  */
 export function isConnected (node) {
-  return findNodeRoot(node).nodeType === Node.DOCUMENT_NODE
+  return findNodeRoot(node).nodeType === window.Node.DOCUMENT_NODE
 }
 
 /**
- * 
+ *
  * @param {Element|Node} element
  */
 export function isCustom (element) {

@@ -156,7 +156,7 @@ export class CustomElementsRegistry {
     // 4.
     if (!map.hasOwnProperty(name)) {
       let resolver
-      const promise = new Promise((resolve) => resolver = resolve)
+      const promise = new Promise((resolve) => (resolver = resolve))
 
       map[ name ] = { promise, resolve: resolver }
     }
@@ -367,7 +367,7 @@ export class CustomElementsRegistry {
     }
 
     // 10.
-    if (constructResult != element) {
+    if (constructResult !== element) {
       throw new Error('invalid state error')
     }
 
@@ -376,19 +376,19 @@ export class CustomElementsRegistry {
 
     // 12.
     this._customElementDefinition.set(element, definition)
-
-    // todo: upgrade reaction
   }
 
   /**
    *
    * @param {Element} element
+   * @param {string|null} [is]
    * @returns {CustomElementDefinition}
    * @private
    */
-  _getElementDefinition (element) {
+  _getElementDefinition (element, is) {
     let name = element.localName.toLowerCase()
-    const is = element.getAttribute('is')
+
+    is = is || element.getAttribute('is')
 
     if (is != null) {
       name = is

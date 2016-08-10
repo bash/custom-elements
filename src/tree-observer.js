@@ -28,7 +28,7 @@ export class TreeObserver {
    * @todo observe shadow roots
    */
   observe () {
-    const observer = new MutationObserver((mutations) => {
+    const observer = new window.MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         Array.from(mutation.addedNodes)
           .forEach((node) => this._addNode(node))
@@ -53,7 +53,7 @@ export class TreeObserver {
    * @todo elements inside shadow roots
    */
   _addNode (node) {
-    if (node.nodeType !== Node.ELEMENT_NODE) {
+    if (node.nodeType !== window.Node.ELEMENT_NODE) {
       return
     }
 
@@ -78,7 +78,7 @@ export class TreeObserver {
    * @private
    */
   _removeNode (node) {
-    if (node.nodeType !== Node.ELEMENT_NODE || !isCustom(node)) {
+    if (node.nodeType !== window.Node.ELEMENT_NODE || !isCustom(node)) {
       return
     }
 

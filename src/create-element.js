@@ -29,7 +29,7 @@ export function createElement (createElement, registry) {
 
     // 4.
     // noinspection JSAccessibilityCheck
-    const definition = registry._getElementDefinition(element)
+    const definition = registry._getElementDefinition(element, is)
 
     // 5.
     if (is != null && definition == null) {

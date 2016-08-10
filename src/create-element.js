@@ -13,7 +13,6 @@ export function createElement (createElement, registry) {
    *
    * @param {string} localName
    * @param {{ is: string|null }} options
-   * @todo upgrade element if necessary
    */
   return function (localName, options = {}) {
     const element = createElement.call(this, localName)

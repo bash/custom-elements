@@ -1,0 +1,11 @@
+language: node_js
+
+node_js:
+- latest
+
+before_script:
+- make deps
+
+script:
+- make
+- make lint

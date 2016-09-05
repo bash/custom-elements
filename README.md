@@ -1,5 +1,6 @@
 # custom-elements
 
+[![Build Status](https://travis-ci.org/bash/custom-elements.svg?branch=master)](https://travis-ci.org/bash/custom-elements)
 [![WTFPL License](https://img.shields.io/badge/license-WTFPL-blue.svg)](LICENSE)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![built-with-make](https://img.shields.io/badge/build%20system-make-brightgreen.svg)](Makefile)

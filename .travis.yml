@@ -9,3 +9,16 @@ before_script:
 script:
 - make
 - make lint
+
+deploy:
+  provider: releases
+
+  api_key:
+    secure: "AIVzWiCKrxfne+YkG3yolv3prTYObHnhFbUhQxE43U5Jh14KEqs5eKKDLofUNGreyqL7x1Q783IFEpc7uRnWhCaMVWJb2362qrIwg9Oo5JEczYe9ddDSguOKgC6xrXnetTXxpRjywNtLUKTz4ymn8Fac2wki5W/GogKYjEELedkNGt4wVXfd/MdakZPZ0CdntakrTpfn0YeHEV9hZfvDe59dg5kz0JFnyYfKXvCA2tuRhYmhr6ddX4YB/Fr8tRBenhs/KMSg0k0361Bw42NVY2SNyYgUunarfbGabzrSkfdm4WJXeSD49cg3Y7yvySIhscxn7dHMk78F9SEeHKKuY51NaLB9XnPYwpWFsvyEIFBUrxXiclYr+FEbgN8PvlpSE5cfAUwlQYvzV57ov7Auon1incGW4VR2SrsDWdYcQsqqL4Bm9YYncQtcj0O7WhOyZNg0dF4Mep+sAtPRUBMl91WfsD5oApOvwcZ/ngGMF+1Oc9cqGeBIOSdyD/lL4dSTcWKtbtQEX+Ybkh2CGRSg1buDCBmrST3+owe5/gDmcIENohIzlbpRkvEtwyikGKsqiIPTKUfiRRwBXp3a9xY4kEuXssaMSGA9IvoaJG+GTdJQdmte2wc26HuyZ5gLyxuLCL1ke1HMCQ7XiyKe0hVcz3VhjBTW/jDClRjLBWel0z4="
+
+  file: "dist/custom-elements.js"
+
+  skip_cleanup: true
+
+  on:
+    tags: true

@@ -6,6 +6,9 @@ node_js:
 before_script:
 - make deps
 
+env:
+- BUILD_ENV=release
+
 script:
 - make
 - make lint

@@ -9,6 +9,10 @@ a standalone polyfill for the custom elements v1 spec
 
 🚧 **DISCLAIMER: THIS POLYFILL IS WORK IN PROGRESS. USE AT YOUR OWN RISK.** 🚧
 
+## Download
+
+A pre-built version can be found [https://github.com/bash/custom-elements/releases/latest](here)
+
 ## Install Dependencies
 ```bash
 make deps

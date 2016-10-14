@@ -20,7 +20,7 @@ import { patchWindow } from './patches/window'
 import { patchConstructors } from './patches/constructors'
 
 (() => {
-  if (window.customElements) {
+  if (window.customElements && !navigator.userAgent.match(/Chrome/)) {
     return
   }
 

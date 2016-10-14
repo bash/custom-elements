@@ -13,7 +13,7 @@
  * @param {CustomElementsRegistry} registry
  */
 export function patchWindow (registry) {
-  Object.defineProperty(Window.prototype, 'customElements', {
+  Object.defineProperty(window, 'customElements', {
     value: registry
   })
 }

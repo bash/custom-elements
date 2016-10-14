@@ -11,7 +11,7 @@ a standalone polyfill for the custom elements v1 spec
 
 ## Download
 
-A pre-built version can be found [https://github.com/bash/custom-elements/releases/latest](here)
+A pre-built version can be found [here](https://github.com/bash/custom-elements/releases/latest)
 
 ## Install Dependencies
 ```bash

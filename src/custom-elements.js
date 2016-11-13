@@ -20,10 +20,8 @@ import { patchConstructors } from './patches/constructors'
 
 function checkSupport () {
   const name = `dummy-button-${Math.floor(Math.random() * 10000)}`
-
   const result = new Promise((resolve) => {
-
-    const Dummy = class extends HTMLButtonElement {
+    const Dummy = class extends window.HTMLButtonElement {
       constructor () {
         super()
         resolve(true)

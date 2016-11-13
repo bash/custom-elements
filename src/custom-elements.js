@@ -14,22 +14,50 @@
 
 import { CustomElementsRegistry } from './custom-elements-registry'
 import { TreeObserver } from './tree-observer'
-
 import { patchDocument } from './patches/document'
 import { patchWindow } from './patches/window'
 import { patchConstructors } from './patches/constructors'
 
+function checkSupport () {
+  const name = `dummy-button-${Math.floor(Math.random() * 10000)}`
+
+  const result = new Promise((resolve) => {
+
+    const Dummy = class extends HTMLButtonElement {
+      constructor () {
+        super()
+        resolve(true)
+      }
+    }
+
+    window.customElements.define(name, Dummy, { extends: 'button' })
+
+    const element = document.createElement('button', { is: name })
+
+    if (!element instanceof Dummy) {
+      resolve(false)
+    }
+
+    resolve(Promise.resolve(false))
+  })
+
+  return result.catch(() => false)
+}
+
 (() => {
-  if (window.customElements) {
-    return
-  }
+  window.customElementsPolyfillReady = checkSupport()
+    .then((isSupported) => {
+      if (isSupported) {
+        return
+      }
 
-  const registry = new CustomElementsRegistry()
-  const observer = new TreeObserver(registry)
+      const registry = new CustomElementsRegistry()
+      const observer = new TreeObserver(registry)
 
-  patchDocument(registry)
-  patchWindow(registry)
-  patchConstructors(registry)
+      patchDocument(registry)
+      patchWindow(registry)
+      patchConstructors(registry)
 
-  observer.observe()
+      observer.observe()
+    })
 })()

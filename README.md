@@ -13,6 +13,17 @@ a standalone polyfill for the custom elements v1 spec
 
 A pre-built version can be found [here](https://github.com/bash/custom-elements/releases/latest)
 
+## Usage
+
+As a consequence of the nature of our check for native support all calls to the custom elements API need to wait for the promise found in `window.customElementsPolyfillReady` to be resolved:
+
+```js
+window.customElementsPolyfillReady.then(() => {
+    window.customElements.define(/* ... */)
+})
+```
+
+
 ## Install Dependencies
 ```bash
 make deps

@@ -80,19 +80,19 @@ const elementInterfaces = [
   'TableRow',
   'Track',
   'UList',
-  'Video'
+  'Video',
+  'Unknown'
 ]
 
 /**
  *
  * @param {Function} Original
  * @param {CustomElementsRegistry} registry
- * @param {boolean} isHtmlElement
  * @returns {Function}
  */
-const wrapElementConstructor = (Original, registry, isHtmlElement) => {
+const wrapElementConstructor = (Original, registry) => {
   const proto = Original.prototype
-  const Constructor = ElementConstructor(registry, isHtmlElement)
+  const Constructor = ElementConstructor(registry, tagName)
 
   Constructor.prototype = Object.create(proto)
 
@@ -104,15 +104,20 @@ const wrapElementConstructor = (Original, registry, isHtmlElement) => {
  * @param {CustomElementsRegistry} registry
  */
 export function patchConstructors (registry) {
-  window.HTMLElement = wrapElementConstructor(window.HTMLElement, registry, true)
+  const _HTMLElement = window.HTMLElement
+
+  window.HTMLElement = ElementConstructor(registry)
+  window.HTMLElement.prototype = Object.create(_HTMLElement.prototype)
 
   elementInterfaces.forEach((name) => {
     const fullName = `HTML${name}Element`
-    
-    if (!window[fullName]) {
+
+    if (!window[ fullName ]) {
       return
     }
 
-    window[ fullName ] = wrapElementConstructor(window[ fullName ], registry, false)
+    window[ fullName ] = function () { return window.HTMLElement.apply(this, arguments) }
+
+    Object.setPrototypeOf(window[ fullName ].prototype, window.HTMLElement.prototype)
   })
 }

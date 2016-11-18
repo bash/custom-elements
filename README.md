@@ -39,7 +39,7 @@ Setting the environment variable NODE_ENV to production will disable sourcmaps a
 It's generally a good idea to run `make clean` before building for production.
 
 ```bash
-NODE_ENV=production make
+BUILD_ENV=release make
 ```
 
 ## Cleanup built files

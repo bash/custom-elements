@@ -11,7 +11,7 @@
 import { createElement } from '../create-element'
 
 /**
- * 
+ *
  * @param {CustomElementsRegistry} registry
  */
 export function patchDocument (registry) {

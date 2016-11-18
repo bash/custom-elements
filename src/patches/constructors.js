@@ -106,18 +106,29 @@ const wrapElementConstructor = (Original, registry) => {
 export function patchConstructors (registry) {
   const _HTMLElement = window.HTMLElement
 
-  window.HTMLElement = ElementConstructor(registry)
-  window.HTMLElement.prototype = Object.create(_HTMLElement.prototype)
+  const HTMLElement = ElementConstructor(registry)
+  HTMLElement.prototype = Object.create(_HTMLElement.prototype)
+
+  window.HTMLElement = HTMLElement
 
   elementInterfaces.forEach((name) => {
     const fullName = `HTML${name}Element`
+    const _C = window[ fullName ]
 
-    if (!window[ fullName ]) {
+    if (!_C) {
       return
     }
 
-    window[ fullName ] = function () { return window.HTMLElement.apply(this, arguments) }
+    const proto = _C.prototype
 
-    Object.setPrototypeOf(window[ fullName ].prototype, window.HTMLElement.prototype)
+    Object.setPrototypeOf(proto, window.HTMLElement.prototype)
+
+    const C = function () {
+      return window.HTMLElement.apply(this, arguments)
+    }
+
+    C.prototype = proto
+
+    window[fullName] = C
   })
 }

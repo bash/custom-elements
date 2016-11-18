@@ -33,9 +33,9 @@ export function ElementConstructor (registry) {
     }
 
     // 4.
-    if (definition.localName === definition.name && Object.getPrototypeOf(proto) !== Constructor.prototype) {
-      throw new TypeError('an autonomous element must inherit from HTMLElement')
-    }
+    // if (definition.localName === definition.name && Object.getPrototypeOf(proto) !== Constructor.prototype) {
+    //   throw new TypeError('an autonomous element must inherit from HTMLElement')
+    // }
 
     // todo: 5.
 

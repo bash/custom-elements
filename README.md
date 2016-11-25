@@ -13,14 +13,16 @@ a standalone polyfill for the custom elements v1 spec
 
 A pre-built version can be found [here](https://github.com/bash/custom-elements/releases/latest)
 
-## Usage
+## Polyfill extras
 
-As a consequence of the nature of our check for native support all calls to the custom elements API need to wait for the promise found in `window.customElementsPolyfillReady` to be resolved:
+The polyfilled `CustomElementsRegistry` provides an additional property `polyfilled` set to `true`.
 
 ```js
-window.customElementsPolyfillReady.then(() => {
-    window.customElements.define(/* ... */)
-})
+// when natively supported
+console.log(window.customElements.polyfilled) // => undefined
+
+// when polyfilled
+console.log(window.customElements.polyfilled) // => true
 ```
 
 
@@ -35,7 +37,7 @@ make
 ```
 
 ## Building for production
-Setting the environment variable NODE_ENV to production will disable sourcmaps and cause the javascript to be minified.
+Setting the `BUILD_ENV` environment variable to `production` will disable sourcmaps and cause the javascript to be minified.
 It's generally a good idea to run `make clean` before building for production.
 
 ```bash

@@ -19,43 +19,41 @@ import { patchWindow } from './patches/window'
 import { patchConstructors } from './patches/constructors'
 
 function checkSupport () {
-  const name = `dummy-button-${Math.floor(Math.random() * 10000)}`
-  const result = new Promise((resolve) => {
-    const Dummy = class extends window.HTMLButtonElement {
-      constructor () {
-        super()
-        resolve(true)
-      }
+  const name = `dummy-button-${Date.now()}`
+  
+  try {
+    class Dummy extends window.HTMLButtonElement {
     }
 
     window.customElements.define(name, Dummy, { extends: 'button' })
 
     const element = document.createElement('button', { is: name })
 
-    if (!element instanceof Dummy) {
-      resolve(false)
+    if (!(element instanceof Dummy)) {
+      return false
     }
 
-    resolve(Promise.resolve(false))
-  })
+    if (element.getAttribute('is') !== name) {
+      return false
+    }
+  } catch (_) {
+    return false
+  }
 
-  return result.catch(() => false)
+  return true
 }
 
 (() => {
-  window.customElementsPolyfillReady = checkSupport()
-    .then((isSupported) => {
-      if (isSupported) {
-        return
-      }
+  if (checkSupport()) {
+    return
+  }
 
-      const registry = new CustomElementsRegistry()
-      const observer = new TreeObserver(registry)
+  const registry = new CustomElementsRegistry()
+  const observer = new TreeObserver(registry)
 
-      patchDocument(registry)
-      patchWindow(registry)
-      patchConstructors(registry)
+  patchDocument(registry)
+  patchWindow(registry)
+  patchConstructors(registry)
 
-      observer.observe()
-    })
+  observer.observe()
 })()

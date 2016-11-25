@@ -20,7 +20,7 @@ import { patchConstructors } from './patches/constructors'
 
 function checkSupport () {
   const name = `dummy-button-${Date.now()}`
-  
+
   try {
     class Dummy extends window.HTMLButtonElement {
     }

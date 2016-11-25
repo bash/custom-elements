@@ -44,7 +44,7 @@ export class TreeObserver {
 
     // noinspection JSCheckFunctionSignatures
     observer.observe(document, { childList: true, attributes: true, subtree: true, attributeOldValue: true })
-    
+
     this._addNode(document.documentElement)
   }
 

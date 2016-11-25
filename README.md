@@ -37,7 +37,7 @@ make
 ```
 
 ## Building for production
-Setting the `BUILD_ENV` environment variable to `production` will disable sourcmaps and cause the javascript to be minified.
+Setting the `BUILD_ENV` environment variable to `release` will disable sourcmaps and cause the javascript to be minified.
 It's generally a good idea to run `make clean` before building for production.
 
 ```bash

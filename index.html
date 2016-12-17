@@ -7,6 +7,19 @@
 <body>
 <foo-bar foo="hello world"></foo-bar>
 <input is="extended-input" />
+
+<div>
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+<input is="extended-input" />
+</div>
+
 <script src="./dist/custom-elements.js"></script>
 <script>
 
@@ -59,6 +72,10 @@
             console.log('connected', this)
         }
 
+        disconnectedCallback () {
+          console.log('disconnected', this)
+        }
+
         foobar () {
             console.log('foobar called')
         }
@@ -66,6 +83,21 @@
 
     window.customElements.define('foo-bar', FooBar)
     window.customElements.define('extended-input', ExtendedInput, { extends: 'input' })
+
+    console.info('removing .div')
+    const div = document.querySelector('div')
+    div.parentNode.removeChild(div)
+
+    console.info('document.createElement(name, { is })')
+    console.log(document.createElement('input', { is: 'extended-input' }))
+
+    console.info('new ExtendedInput()')
+    console.log(new ExtendedInput())
+
+    console.info('connecting new ExtendedInput()')
+    document.body.appendChild(new ExtendedInput())
+
+    
 
 </script>
 </body>

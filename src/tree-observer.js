@@ -24,14 +24,14 @@ export class TreeObserver {
     this._registry = registry
 
     /**
-     * 
+     *
      * @type {Set<Element>}
      * @private
      */
     this._connectedNodes = new Set()
 
     /**
-     * 
+     *
      * @type {Set<Element>}
      * @private
      */

@@ -8,12 +8,11 @@
  * http://www.wtfpl.net/ for more details.
  */
 
-
 /**
  *
  * @param {Function} callbackFn
  */
-export function queueMicroTask(callbackFn) {
+export function queueMicroTask (callbackFn) {
   Promise.resolve().then(callbackFn)
 }
 

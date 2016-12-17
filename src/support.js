@@ -9,7 +9,7 @@
  */
 
 /**
- * 
+ *
  * @returns {boolean}
  */
 export function checkSupport () {

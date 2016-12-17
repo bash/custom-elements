@@ -29,13 +29,7 @@
  * @property {Function} attributeChangedCallback
  */
 
-import { isConnected } from './dom-utils'
-
-/**
- *
- * @param {Function} callbackFn
- */
-const queueMicroTask = (callbackFn) => Promise.resolve().then(callbackFn)
+import { isConnected, queueMicroTask } from './dom-utils'
 
 /**
  *

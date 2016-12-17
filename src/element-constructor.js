@@ -48,6 +48,12 @@ export function ElementConstructor (registry) {
       // 7.1
       const element = document.createElement(definition.localName)
 
+      if (definition.localName !== definition.name) {
+        // set 'is' attribute when extended element is created using constructor
+        // TODO: is this the right behaviour?
+        element.setAttribute('is', definition.name)
+      }
+
       // 7.2
       Reflect.setPrototypeOf(element, prototype)
 

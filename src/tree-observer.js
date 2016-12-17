@@ -8,7 +8,7 @@
  * http://www.wtfpl.net/ for more details.
  */
 
-import { isCustom } from './dom-utils'
+import { isCustom, queueMicroTask } from './dom-utils'
 
 export class TreeObserver {
   /**
@@ -22,6 +22,20 @@ export class TreeObserver {
      * @private
      */
     this._registry = registry
+
+    /**
+     * 
+     * @type {Set<Element>}
+     * @private
+     */
+    this._connectedNodes = new Set()
+
+    /**
+     * 
+     * @type {Set<Element>}
+     * @private
+     */
+    this._disconnectedNodes = new Set()
   }
 
   /**
@@ -40,6 +54,9 @@ export class TreeObserver {
           this._attributeChange(mutation)
         }
       })
+
+      this._connectedNodes = new Set()
+      this._disconnectedNodes = new Set()
     })
 
     // noinspection JSCheckFunctionSignatures
@@ -62,10 +79,18 @@ export class TreeObserver {
     const registry = this._registry
 
     for (let i = 0; i < node.childNodes.length; i++) {
-      this._addNode(node.childNodes[ i ])
+      queueMicroTask(() => {
+        this._addNode(node.childNodes[ i ])
+      })
+    }
+
+    if (this._connectedNodes.has(node)) {
+      return
     }
 
     if (isCustom(node)) {
+      this._connectedNodes.add(node)
+
       // noinspection JSAccessibilityCheck
       return registry._callbackReaction(node, 'connectedCallback', [])
     }
@@ -80,9 +105,21 @@ export class TreeObserver {
    * @private
    */
   _removeNode (node) {
+    for (let i = 0; i < node.childNodes.length; i++) {
+      queueMicroTask(() => {
+        this._removeNode(node.childNodes[ i ])
+      })
+    }
+
     if (node.nodeType !== window.Node.ELEMENT_NODE || !isCustom(node)) {
       return
     }
+
+    if (this._disconnectedNodes.has(node)) {
+      return
+    }
+
+    this._disconnectedNodes.add(node)
 
     // noinspection JSAccessibilityCheck
     this._registry._callbackReaction(node, 'disconnectedCallback', [])

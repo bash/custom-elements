@@ -22,20 +22,6 @@ export class TreeObserver {
      * @private
      */
     this._registry = registry
-
-    /**
-     *
-     * @type {Set<Element>}
-     * @private
-     */
-    this._connectedNodes = new Set()
-
-    /**
-     *
-     * @type {Set<Element>}
-     * @private
-     */
-    this._disconnectedNodes = new Set()
   }
 
   /**
@@ -43,54 +29,55 @@ export class TreeObserver {
    */
   observe () {
     const observer = new window.MutationObserver((mutations) => {
+      const addedNodes = new Set()
+      const removedNodes = new Set()
+
       mutations.forEach((mutation) => {
-        Array.from(mutation.addedNodes)
-          .forEach((node) => this._addNode(node))
-
-        Array.from(mutation.removedNodes)
-          .forEach((node) => this._removeNode(node))
-
         if (mutation.type === 'attributes') {
           this._attributeChange(mutation)
         }
-      })
 
-      this._connectedNodes = new Set()
-      this._disconnectedNodes = new Set()
+        if (mutation.type === 'childList') {
+          Array.from(mutation.addedNodes)
+            .forEach((node) => this._addNode(node, addedNodes))
+
+          Array.from(mutation.removedNodes)
+            .forEach((node) => this._removeNode(node, removedNodes))
+        }
+      })
     })
 
     // noinspection JSCheckFunctionSignatures
     observer.observe(document, { childList: true, attributes: true, subtree: true, attributeOldValue: true })
-
-    this._addNode(document.documentElement)
   }
 
   /**
    *
    * @param {Node|Element} node
+   * @param {Set<Element>} visitedNodes
    * @private
    * @todo elements inside shadow roots
    */
-  _addNode (node) {
+  _addNode (node, visitedNodes) {
+    if (visitedNodes.has(node)) {
+      return
+    }
+
     if (node.nodeType !== window.Node.ELEMENT_NODE) {
       return
     }
+
+    visitedNodes.add(node)
 
     const registry = this._registry
 
     for (let i = 0; i < node.childNodes.length; i++) {
       queueMicroTask(() => {
-        this._addNode(node.childNodes[ i ])
+        this._addNode(node.childNodes[ i ], visitedNodes)
       })
     }
 
-    if (this._connectedNodes.has(node)) {
-      return
-    }
-
     if (isCustom(node)) {
-      this._connectedNodes.add(node)
-
       // noinspection JSAccessibilityCheck
       return registry._callbackReaction(node, 'connectedCallback', [])
     }
@@ -102,24 +89,25 @@ export class TreeObserver {
   /**
    *
    * @param {Node|Element} node
+   * @param {Set<Element>} visitedNodes
    * @private
    */
-  _removeNode (node) {
-    for (let i = 0; i < node.childNodes.length; i++) {
-      queueMicroTask(() => {
-        this._removeNode(node.childNodes[ i ])
-      })
+  _removeNode (node, visitedNodes) {
+    if (visitedNodes.has(node)) {
+      return
     }
 
     if (node.nodeType !== window.Node.ELEMENT_NODE || !isCustom(node)) {
       return
     }
 
-    if (this._disconnectedNodes.has(node)) {
-      return
-    }
+    visitedNodes.add(node)
 
-    this._disconnectedNodes.add(node)
+    for (let i = 0; i < node.childNodes.length; i++) {
+      queueMicroTask(() => {
+        this._removeNode(node.childNodes[ i ], visitedNodes)
+      })
+    }
 
     // noinspection JSAccessibilityCheck
     this._registry._callbackReaction(node, 'disconnectedCallback', [])
